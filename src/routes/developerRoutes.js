@@ -29,8 +29,8 @@ router.get('/users/:userId', getDeveloperUserDetail);
 router.patch('/users/:userId', updateDeveloperUser);
 
 router.get('/users/:userId/blocked', getDeveloperBlockedUsers);
-router.post('/users/:userId/block/:targetUserId', developerBlockUser);
-router.delete('/users/:userId/block/:targetUserId', developerUnblockUser);
+router.post('/users/:userId/block/:targetUserId/minimal', developerBlockUser);
+router.delete('/users/:userId/block/:targetUserId/minimal', developerUnblockUser);
 
 // === 개인정보 복호화 API (관리자 전용 - 온디맨드 복호화) ===
 router.post('/decrypt-user-data', async (req, res) => {
