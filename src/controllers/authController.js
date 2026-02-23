@@ -236,6 +236,7 @@ export const refreshToken = async (req, res) => {
     try {
         const rToken = req.cookies.refreshToken;
         if (!rToken) {
+            res.clearCookie('accessToken', clearCookieOptions);
             return res.status(401).json({ message: '리프레시 토큰이 없습니다.' });
         }
 
@@ -272,6 +273,8 @@ export const refreshToken = async (req, res) => {
             .status(200)
             .json({ message: 'Access token refreshed' });
     } catch (err) {
+        res.clearCookie('refreshToken', clearCookieOptions);
+        res.clearCookie('accessToken', clearCookieOptions);
         return res.status(401).json({ message: '리프레시 토큰이 유효하지 않습니다.' });
     }
 };
@@ -302,12 +305,15 @@ export const getCurrentUser = async (req, res) => {
         // 2) 쿠키 단에서 리프레시 토큰 검사
         const rToken = req.cookies.refreshToken;
         if (!rToken) {
+            res.clearCookie('accessToken', clearCookieOptions);
             return res.status(401).json({ message: '리프레시 토큰이 없습니다.' });
         }
         let payload;
         try {
             payload = jwt.verify(rToken, REFRESH_SECRET);
         } catch {
+            res.clearCookie('refreshToken', clearCookieOptions);
+            res.clearCookie('accessToken', clearCookieOptions);
             return res.status(401).json({ message: '리프레시 토큰이 유효하지 않습니다.' });
         }
 
