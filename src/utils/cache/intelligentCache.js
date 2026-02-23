@@ -666,16 +666,37 @@ class IntelligentCache {
     }
   }
   startMemoryCleanup() {
+    const MAX_MEMORY_ENTRIES = 10000; // 메모리 캐시 최대 항목 수
+
     this.memoryCleanupInterval = setInterval(() => {
       if (!this.client && this.memoryCache && this.memoryCache.size > 0) {
         const now = Date.now();
         let cleaned = 0;
         let total = this.memoryCache.size;
 
+        // 1. 만료된 항목 정리
         for (const [key, value] of this.memoryCache.entries()) {
           if (value.expires && value.expires < now) {
             this.memoryCache.delete(key);
             cleaned++;
+          }
+        }
+
+        // 2. TTL=0 (무제한) 항목으로 인한 메모리 누수 방지
+        if (this.memoryCache.size > MAX_MEMORY_ENTRIES) {
+          const overflow = this.memoryCache.size - MAX_MEMORY_ENTRIES;
+          let removed = 0;
+          // Map은 삽입 순서를 유지하므로, 가장 오래된 무제한 항목부터 제거
+          for (const [key, value] of this.memoryCache.entries()) {
+            if (removed >= overflow) break;
+            if (value.expires === Infinity) {
+              this.memoryCache.delete(key);
+              removed++;
+              cleaned++;
+            }
+          }
+          if (removed > 0) {
+            console.log(`⚠️ [메모리 캐시] 최대 크기 초과 - 무제한 항목 ${removed}개 정리`);
           }
         }
 

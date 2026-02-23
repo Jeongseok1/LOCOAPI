@@ -313,7 +313,6 @@ export const initializeSocket = async (server) => {
                     _id: tempId,
                     chatRoom: chatRoom,
                     sender: senderId,
-                    text: text,
                     isEncrypted: false,
                 };
 

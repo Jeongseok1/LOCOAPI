@@ -194,7 +194,8 @@ export const getAllChatRooms = async (filters) => {
                 }
             }
 
-            await invalidateExitedRooms(IntelligentCache, filters.userId);
+            // ✅ invalidateExitedRooms 제거 - 캐시 저장 직후 즉시 무효화하는 버그였음
+            // 퇴장방 캐시 무효화는 실제 퇴장/재입장 시에만 수행해야 함
 
             console.log(`🚪 [getAllChatRooms] 퇴장한 방: ${exited.length}개`);
 
